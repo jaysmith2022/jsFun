@@ -2,7 +2,7 @@ const characters = [
   {
     name: 'Avatar',
     profession: 'heroine',
-    weapons: ['magebane', 'whip', 'axe'],
+    weapons: ['magebane', 'whip', 'axe'] ,
     home: 'Earth',
   },
   {
