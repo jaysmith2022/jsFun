@@ -23,13 +23,11 @@ const kittyPrompts = {
   orangePetNames(kittyDetails) {
     // Return an array of just the names of kitties who are orange e.g.
         // ['Tiger', 'Snickers']
-    const orangeKat = kittyDetails.filter(el => el.color === 'orange')
-    .map(el => el.name) 
-    return orangeKat
+
 //search for only the orange cats(filter)
 // -- will return an array of pet objects
 // -- return an array of 2 names and use (map)
-
+    
 
     // Annotation:
     // You start with filter to break down the array to only the ones
@@ -39,12 +37,12 @@ const kittyPrompts = {
 
   sortByAge(kittyDetails) {
     // Sort the kitties by their age
-    return kittyDetails.sort((a, b) => b.age - a.age)
-
+    
     // Annotation:
     // I compare two cats at the same time and based off my return 
     // I will either keep them where they are or move one above the other 
     // until they are all in the right spot
+
   },
 
   growUp(kittenDetails) {
@@ -60,14 +58,11 @@ const kittyPrompts = {
     //   color: 'orange'
     // },
     // ...etc]
-      const kittyAge = kittenDetails.map(obj => {
-        return {
-          name: obj.name,
-          age: obj.age +2,
-          color: obj.color
-        }
-      })
-      return kittyAge
+
+    return kittenDetails.map(el => {
+      el.age += 2
+      return el
+    })
   }
 };
 
@@ -102,16 +97,14 @@ const clubPrompts = {
     // }
 
     return clubs.flatMap(el => el.members).reduce((acc, curr) => {
-      acc[curr] = []
-      clubs.map(el => {
-        el.members.forEach(e => {
-          if(e.includes(curr)){
-            acc[curr].push(el.club)
-          }
-        })
-      })
+      acc[curr] = clubs.map(e => {
+        if(e.members.includes(curr)) {
+          return e.club
+        }
+      }).filter(ele => ele)
       return acc
     }, {})
+
 
 
     //I need to return an object with the keys of members with a 
@@ -157,13 +150,13 @@ const modPrompts = {
     //   { mod: 3, studentsPerInstructor: 10 },
     //   { mod: 4, studentsPerInstructor: 8 }
     // ]
-    const getStudents = mods.map(el => {
+
+    return mods.map(el => {
       return {
         mod: el.mod,
         studentsPerInstructor: el.students / el.instructors
       }
     })
-    return getStudents
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -195,14 +188,12 @@ const cakePrompts = {
     //    { flavor: 'yellow', inStock: 14 },
     //    ..etc
     // ]
-    const cakeStock = cakes.map(el => {
+    return cakes.map(el => {
       return {
         flavor: el.cakeFlavor,
         inStock: el.inStock
       }
     })
-    return cakeStock
-
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -227,10 +218,8 @@ const cakePrompts = {
     // },
     // ..etc
     // ]
-    const inStockCakes = cakes.filter(el => {
-      return el.inStock > 0
-    })
-    return inStockCakes
+
+    return cakes.filter(el => el.inStock > 0)
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -252,11 +241,8 @@ const cakePrompts = {
     // Return an array of all unique toppings (no duplicates) needed to bake
     // every cake in the dataset e.g.
     // ['dutch process cocoa', 'toasted sugar', 'smoked sea salt', 'berries', ..etc]
-    const toppings = cakes.flatMap(top => {
-      return top.toppings
-    })
-    return [...new Set(toppings)]
-    
+
+    return [...new Set(cakes.flatMap(el => el.toppings))]
 
     // Annotation:
     // Write your annotation here as a comment
@@ -272,16 +258,12 @@ const cakePrompts = {
     //    'berries': 2,
     //    ...etc
     // }
-    const inventory = cakes.reduce((arr, ingred) => {
-            arr.push(...ingred.toppings)
-            return arr
-    }, []).reduce((obj, toppings) => {
-        const currentValue = obj[toppings] || 0
-        obj[toppings] = currentValue + 1
-        return obj
-    }, {})
 
-    return inventory
+    return cakes.flatMap(el => el.toppings).reduce((acc, curr) => {
+      const addTop = acc[curr] || 0
+      acc[curr] = addTop + 1
+      return acc
+    }, {})
 
 
   
@@ -319,15 +301,7 @@ const classPrompts = {
     //   { roomLetter: 'E', program: 'FE', capacity: 22 },
     //   { roomLetter: 'G', program: 'FE', capacity: 29 }
     // ]
-
-    return classrooms.reduce((fe, obj) => {
-        if(obj.program === 'FE') {
-          fe.push(obj)
-          // fe = [...fe, obj]
-          return fe
-        }
-        return fe
-    }, []) 
+    return classrooms.filter(el => el.program == 'FE')
 
 
     // Annotation:
@@ -341,21 +315,15 @@ const classPrompts = {
     //   feCapacity: 110,
     //   beCapacity: 96
     // }
-      return classrooms.reduce((fe, obj) => {
-          return {
-            feCapacity: classrooms.map(sum =>{
-                if(sum.program === 'FE') {
-                  return sum.capacity
-                }
-            }).filter(el => el).reduce((acc, curr) => acc + curr),
-            beCapacity: classrooms.map(sum =>{
-              if(sum.program === 'BE') {
-                return sum.capacity
-              }
-          }).filter(el => el).reduce((acc, curr) => acc + curr)
-          }
+    return classrooms.reduce((acc, curr) => {
+      acc['feCapacity'] = classrooms.filter(el => el.program === 'FE').reduce((ac, cur) => {
+        return ac + cur.capacity
+      }, 0),
+      acc['beCapacity'] = classrooms.filter(el => el.program === 'BE').reduce((ac, cur) => {
+        return ac + cur.capacity
       }, 0)
-
+      return acc
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -387,22 +355,14 @@ const bookPrompts = {
     //   'The Handmaid\'s Tale', 'The Metamorphosis', 'Brave New World', 'Life of Pi',
     //   'The Curious Incident of the Dog in the Night - Time', 'The Bell Jar',
     //   'Catch-22', 'Treasure Island']
+    return titles.reduce((acc, curr) => {
+      if(curr.genre !== 'Horror' && curr.genre !== 'True Crime') {
+        acc.push(curr.title)
+        return acc
+      }
+      return acc
+    }, [])
 
-      return titles.reduce((arr, book) => {
-        if(book.genre !== 'Horror' && book.genre !== 'True Crime') {
-          arr.push(book.title)
-          return arr
-        }
-        return arr
-      }, [])
-      
-      // .reduce((acc, curr) => {
-        // if(curr.genre !== 'True Crime') {
-        //   acc.push(curr.title)
-        //   return acc
-        // }
-        // return acc
-      // }, [])
 
 
     // Annotation:
@@ -416,16 +376,19 @@ const bookPrompts = {
     // [{ title: 'Harry Potter and the Sorcerer\'s Stone', year: 1997 },
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
-      return title.filter(book => {
-        if(book.published > 1990){
-          return book
-        }
-      }).map(el => {
+
+      return title.map(el => {
         return {
           title: el.title,
           year: el.published
         }
-      })
+      }).reduce((acc, curr) => {
+        if(curr.year >= 1990) {
+          acc.push(curr)
+          return acc
+        }
+        return acc
+      }, [])
 
 
     // Annotation:
@@ -442,16 +405,19 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    return books.filter(book => {
-      if(book.published > year){
-        return book
-      }
-    }).map(el => {
+    return books.map(el => {
       return {
         title: el.title,
         year: el.published
       }
-    })
+    }).reduce((acc, curr) => {
+      if(curr.year >= year) {
+        acc.push(curr)
+        return acc
+      }
+      return acc
+    }, [])
+
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -472,7 +438,7 @@ const weatherPrompts = {
     // return an array of all the average temperatures. Eg:
     // [ 40, 40, 44.5, 43.5, 57, 35, 65.5, 62, 14, 46.5 ]
     return weather.map(el => {
-      const total = el.temperature.high + el.temperature.low 
+      const total = el.temperature.high + el.temperature.low
       return total / 2
     })
     // Annotation:
@@ -485,16 +451,11 @@ const weatherPrompts = {
     // [ 'Atlanta, Georgia is sunny.',
     // 'New Orleans, Louisiana is sunny.',
     // 'Raleigh, North Carolina is mostly sunny.' ]
-    return weather.filter(el => {
-      if(el.type === 'sunny') {
-        return el
-      }
-      else if(el.type === 'mostly sunny') {
-        return el
-      }
-    }).map(e => {
-      return `${e.location} is ${e.type}.`
+
+    return weather.filter(el => el.type === 'sunny' || el.type === 'mostly sunny').map(e => {
+        return `${e.location} is ${e.type}.`
     })
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -508,9 +469,9 @@ const weatherPrompts = {
     //   humidity: 84,
     //   temperature: { high: 49, low: 38 }
     // }
-return weather.sort((a, b) => {
-  return b.humidity - a.humidity
-})[0]
+
+    return weather.sort((a, b) => b.humidity - a.humidity)[0]
+
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -533,13 +494,13 @@ const nationalParksPrompts = {
     //   parksToVisit: ["Yellowstone", "Glacier", "Everglades"],
     //   parksVisited: ["Rocky Mountain", "Acadia", "Zion"]
     //}
-  return nationalParks.reduce((acc, curr) => {
-    return  {
-      ...acc, 
-      parksToVisit: nationalParks.filter(e => e.visited === false).map(el => el.name),
-      parksVisited: nationalParks.filter(e => e.visited === true).map(el => el.name)
-    }
-  }, {})
+
+    return nationalParks.reduce((acc, curr) => {
+      acc['parksToVisit'] = nationalParks.filter(el => el.visited === false).map(e => e.name),
+      acc['parksVisited'] = nationalParks.filter(el => el.visited === true).map(e => e.name)
+      return acc
+    }, {})
+
 
 
     // Annotation:
@@ -554,7 +515,13 @@ const nationalParksPrompts = {
     // { Maine: 'Acadia' },
     // { Utah: 'Zion' },
     // { Florida: 'Everglades' } ]
-    return nationalParks.map(el => ({ [el.location]: el.name}))
+
+    return nationalParks.map(el => {
+      return {
+        [el.location]: el.name
+      }
+    })
+
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -574,15 +541,14 @@ const nationalParksPrompts = {
     //   'canyoneering',
     //   'backpacking',
     //   'rock climbing' ]
-
-    return nationalParks.reduce((acc, curr) => {
-      curr.activities.forEach(activity => {
-        if(!acc.includes(activity)) {
-          acc.push(activity)
-        }
-      })
+    return nationalParks.flatMap(element => element.activities).reduce((acc, curr) => {
+      if(!acc.includes(curr)) {
+        acc.push(curr)
+        return acc
+      }
       return acc
     }, [])
+
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -606,7 +572,7 @@ const breweryPrompts = {
   getBeerCount() {
     // Return the total beer count of all beers for every brewery e.g.
     // 40
-    return breweries.flatMap(el => el.beers).length
+    return breweries.flatMap(element => element.beers).length
 
 
     // Annotation:
@@ -621,14 +587,12 @@ const breweryPrompts = {
     //  { name: 'Ratio Beerworks', beerCount: 5},
     // ...etc.
     // ]
-
-    return breweries.map(el => {
+    return breweries.map(element => {
       return {
-        name: el.name,
-        beerCount: el.beers.length
+        name: element.name,
+        beerCount: element.beers.length
       }
     })
-
     
 
     // Annotation:
@@ -639,8 +603,7 @@ const breweryPrompts = {
     // Return a number that is the count of beers that the specified
     // brewery has e.g.
     // given 'Ratio Beerworks', return 5
-
-    return breweries.filter(el => el.name === breweryName).map(e => e.beers.length)[0]
+    return breweries.filter(element => element.name === breweryName).flatMap(e => e.beers).length
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -649,9 +612,7 @@ const breweryPrompts = {
     // Return the beer which has the highest ABV of all beers
     // e.g.
     // { name: 'Barrel Aged Nature\'s Sweater', type: 'Barley Wine', abv: 10.9, ibu: 40 }
-    return breweries.flatMap(el => el.beers).sort((a, b) => {
-      return b.abv - a.abv
-    })[0]
+    return breweries.flatMap(element => element.beers).sort((a, b) => b.abv - a.abv)[0]
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -681,8 +642,8 @@ const boardGamePrompts = {
     // type, sorted alphabetically. 
     // e.g. given an argument of "childrens", return
     // ["Candy Land", "Connect Four", "Operation", "Trouble"]
-    return boardGames[type].map(e => e.name).sort((a, b) => a.localeCompare(b))
     
+    return boardGames[type].map(el => el.name).sort((a, b) => a.localeCompare(b))
     
     // Annotation:
     // Write your annotation here as a comment
@@ -693,7 +654,6 @@ const boardGamePrompts = {
     // e.g. given the argument of 'party', return
     // { name: 'Codenames', rating: 7.4, maxPlayers: 8 },
     return boardGames[type].sort((a, b) => b.rating - a.rating)[0]
-
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -704,9 +664,8 @@ const boardGamePrompts = {
     // note: do not worry about rounding your result.
 
     return boardGames[type].map(el => el.rating).reduce((acc, curr) => {
-      return acc + curr / boardGames[type].length
+      return acc + curr / boardGames[type].map(el => el.rating).length
     }, 0)
-
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -716,9 +675,11 @@ const boardGamePrompts = {
     // and maximum number of players.
     // e.g. given the arguments of "strategy" and 2, return 6.16666666667
     // note: do not worry about rounding your result.
-  return boardGames[type].filter(e => e.maxPlayers === maximumPlayers).map(el => el.rating).reduce((acc, curr) => {
-      return acc + curr / boardGames[type].filter(e => e.maxPlayers === maximumPlayers).length
+
+      return boardGames[type].filter(element => element.maxPlayers === maximumPlayers).map(el => el.rating).reduce((acc, curr) => {
+      return acc + curr / boardGames[type].filter(element => element.maxPlayers === maximumPlayers).map(el => el.rating).length
     }, 0)
+
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -1063,8 +1024,24 @@ const ultimaPrompts = {
 
     // Return the sum damage and total range for each character as an object.
     // ex: [ { Avatar: { damage: 27, range: 24 }, { Iolo: {...}, ...}
-
-    /* CODE GOES HERE */
+    return characters.map(element => {
+      return {
+        [element.name]: {['damage']:element.weapons.map(e => {
+          if(weapons[e]) {
+            return weapons[e].damage
+          }
+        }).reduce((acc, curr) => {
+          return acc + curr
+        }, 0), ['range']:element.weapons.map(e => {
+          if(weapons[e]) {
+            return weapons[e].range
+          }
+        }).reduce((acc, curr) => {
+          return acc + curr
+        }, 0)}
+      }
+    })
+  
 
     // Annotation:
     // Write your annotation here as a comment
@@ -1100,7 +1077,14 @@ const dinosaurPrompts = {
     //   'Jurassic World: Fallen Kingdom': 18
     // }
 
-    /* CODE GOES HERE */
+    return movies.reduce((acc, curr)=> {
+      acc[curr.title] = curr.dinos.map(e => {
+        if(dinosaurs[e].isAwesome === true) {
+          return e
+        }
+      }).filter(el => el).length
+      return acc
+    }, {})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -1132,7 +1116,10 @@ const dinosaurPrompts = {
       }
     */
 
-    /* CODE GOES HERE */
+    console.log(movies.reduce((acc, curr) => {
+      acc[curr.director] = 'fuck you'
+      return acc
+    }, {}))
 
     // Annotation:
     // Write your annotation here as a comment
